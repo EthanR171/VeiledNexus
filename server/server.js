@@ -34,7 +34,16 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer, {});
 
 // Socket event handling
-io.on('connect', () => console.log('New connection established'));
+io.on('connect', (newClientSocket) => {
+  console.log(`New connection established (id: ${newClientSocket.id})`);
+
+  // Hook-up the "our custom event" listener
+  newClientSocket.on('a custom event name', (dataSentWithClientEmit) => {
+    console.log('A client has emitted an event with data =', dataSentWithClientEmit);
+  });
+
+  newClientSocket.emit("a hello from the server", `hello ${newClientSocket.id}!`);
+});
 
 // Start the server listening on PORT, then call the callback (second argument)
 httpServer.listen(PORT, () => console.log(`Listening on port ${PORT}`));
