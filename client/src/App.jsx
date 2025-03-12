@@ -1,9 +1,12 @@
-import { useState } from 'react';
-
 import './App.css';
+import Socket from './components/Socket';
 
 function App() {
-  return <>Project 2</>;
+  return (
+    <>
+      <Socket />
+    </>
+  );
 }
 
 export default App;
