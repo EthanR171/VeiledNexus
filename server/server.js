@@ -36,8 +36,8 @@ const io = new Server(httpServer, {});
 io.on('connect', (socket) => {
   console.log('New connection', socket.id);
 
-  // Client will have to emit "join" with joinInfo
-  socket.on('join', (joinInfo) => {
+  // Client will have to emit "user:join" with joinInfo
+  socket.on('user:join', (joinInfo) => {
     console.log(joinInfo);
     // The client has to be sending joinInfo in this format
     const { roomName, userName } = joinInfo;
@@ -48,12 +48,11 @@ io.on('connect', (socket) => {
     // Add the socket to the roomName room
     socket.join(roomName);
 
-    // socket.id is a "connection id" and works as a "single socket room" for direct messages
-    // socket.emit("joined", roomName); // equivalent call
-    io.to(socket.id).emit('joined', roomName);
+    // emit to the current user that they have joined the room (only emits to the socket who sent the message)
+    socket.emit('user:joined', `${userName} has joined ${roomName}`);
 
-    // Add your own event emit here
-    // So that clients on the room can be notified that a new user as joined
+    // emit to everyone else in the room that user has joined (emits to everyone in the room, but excludes the socket who sent the message)
+    socket.to(roomName).emit('another-user:joined', `${userName} has joined ${roomName}`);
   });
 });
 
