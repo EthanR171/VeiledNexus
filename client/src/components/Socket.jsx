@@ -44,8 +44,10 @@ const Socket = () => {
       ws.on('connect', () => appendToLog('Client connected'));
       ws.on('disconnect', () => appendToLog('Client disconnected'));
 
-      // custom event sent from server 
+      // custom event sent from server
       ws.on('a hello from the server', (data) => appendToLog(data));
+
+      ws.on('room update', (data) => appendToLog(data));
 
       socket.current = ws;
       effectRan.current = true; // Flag to prevent connecting twice

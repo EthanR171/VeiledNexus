@@ -42,7 +42,18 @@ io.on('connect', (newClientSocket) => {
     console.log('A client has emitted an event with data =', dataSentWithClientEmit);
   });
 
-  newClientSocket.emit("a hello from the server", `hello ${newClientSocket.id}!`);
+  newClientSocket.emit('a hello from the server', `hello ${newClientSocket.id}!`);
+
+  // Add new socket to the room
+  newClientSocket.join('lab-14');
+
+  // Count how many sockets are currently in the room, then broadcast that total
+  // fetchSockets returns a Promise. Using then to resolve it
+  io.in('lab-14')
+    .fetchSockets()
+    .then((socketsInRoom) => {
+      io.to('lab-14').emit('room update', `There are ${socketsInRoom.length} sockets in lab-14`);
+    });
 });
 
 // Start the server listening on PORT, then call the callback (second argument)
