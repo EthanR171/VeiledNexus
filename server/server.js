@@ -2,6 +2,8 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 
+import * as data from './data.js';
+
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 const PORT = process.env.PORT || 9000;
 
@@ -37,22 +39,33 @@ io.on('connect', (socket) => {
   console.log('New connection', socket.id);
 
   // Client will have to emit "user:join" with joinInfo
-  socket.on('user:join', (joinInfo) => {
+  socket.on('join', (joinInfo) => {
     console.log(joinInfo);
     // The client has to be sending joinInfo in this format
     const { roomName, userName } = joinInfo;
 
-    // Using socket.data to keep track of the new client identifier: userName
-    socket.data.userName = userName; // keep track of unique user identifier
+    if (data.isUserNameTaken(userName)) {
+      joinInfo.error = `The name ${userName} is already taken`;
+    } else {
+      data.registerUser(userName);
+      socket.data = joinInfo;
+      socket.join(roomName);
+      socket.on('disconnect', () => data.unregisterUser(userName));
 
-    // Add the socket to the roomName room
-    socket.join(roomName);
+      data.addMessage(roomName, { sender: '', text: `${userName} has joined room ${roomName}` });
+      io.to(roomName).emit('chat update', data.roomLog(roomName));
 
-    // emit to the current user that they have joined the room (only emits to the socket who sent the message)
-    socket.emit('user:joined', `${userName} has joined ${roomName}`);
+      socket.on('message', (text) => {
+        const { roomName, userName } = socket.data;
+        const messageInfo = { sender: userName, text };
+        console.log(roomName, messageInfo);
+        data.addMessage(roomName, messageInfo);
+        io.to(roomName).emit('chat update', data.roomLog(roomName));
+      });
+    }
 
-    // emit to everyone else in the room that user has joined (emits to everyone in the room, but excludes the socket who sent the message)
-    socket.to(roomName).emit('another-user:joined', `${userName} has joined ${roomName}`);
+    console.log(joinInfo);
+    socket.emit('join-response', joinInfo);
   });
 });
 
