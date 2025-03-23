@@ -7,12 +7,21 @@ const Chat = (props) => {
   /* Chat Log */
 
   const lastMessageRef = useRef(null);
+
   const renderChatLog = () => {
     const chat = props.chatLog ?? [];
+    // we added a timestamp to the message being passed back in server.js on.('message') event.
     return chat.map((message, index) => (
-      <div key={index}>
-        <Typography ref={lastMessageRef} variant="h6">
-          {message.sender ? `[${message.sender}] ${message.text}` : `${message.text}`}
+      <div key={index} style={{ textAlign: 'center' }}>
+        <Typography variant="h6">{`[${message.timestamp}]`}</Typography>
+        <Typography
+          ref={lastMessageRef}
+          variant="h6"
+          style={{
+            textAlign: message.sender ? 'left' : 'center',
+          }}
+        >
+          {message.sender ? `${message.sender}: ${message.text}` : `${message.text}`}
         </Typography>
       </div>
     ));

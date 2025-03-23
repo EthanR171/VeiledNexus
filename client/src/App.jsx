@@ -26,17 +26,38 @@ function App() {
   const [joinInfo, setJoinInfo] = useState({
     userName: '',
     roomName: '',
+    timestamp: '',
     error: '',
   });
 
   const hasJoined = () => joinInfo.userName && joinInfo.roomName && !joinInfo.error;
-  const joinRoom = (joinData) => socket.current.emit('join', joinData);
+
+  // Updated to send a timestamp with join info
+  const joinRoom = (joinData) => {
+    // get current date timestamp
+    var currentTimeUnix = Date.now();
+    var currentTimeString = new Date(currentTimeUnix).toLocaleString();
+
+    // create an object directly becasue setJoinInfo cant update fast enough before the emit is called. (ends up sending stale data)
+    const joinDataWithTimestamp = {
+      ...joinData,
+      timestamp: currentTimeString,
+    };
+
+    // update state so when we can later pass it as a prop to Chat component
+    setJoinInfo((prev) => ({
+      ...prev,
+      joinDataWithTimestamp,
+    }));
+
+    socket.current.emit('join', joinDataWithTimestamp);
+  };
 
   /* Chat */
 
   const [chatLog, setChatLog] = useState([]);
   const sendMessage = (text) => {
-    socket.current.send(text);
+    socket.current.send(text); // defaults to socket.current.emit("message": text)
   };
 
   /* WebSocket */
@@ -58,7 +79,6 @@ function App() {
       ws.on('join-response', setJoinInfo);
 
       ws.on('chat update', setChatLog);
-
 
       socket.current = ws;
       effectRan.current = true; // Flag to prevent connecting twice

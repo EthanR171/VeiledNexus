@@ -40,7 +40,6 @@ io.on('connect', (socket) => {
 
   // Client will have to emit "user:join" with joinInfo
   socket.on('join', (joinInfo) => {
-    console.log(joinInfo);
     // The client has to be sending joinInfo in this format
     const { roomName, userName } = joinInfo;
 
@@ -52,12 +51,14 @@ io.on('connect', (socket) => {
       socket.join(roomName);
       socket.on('disconnect', () => data.unregisterUser(userName));
 
-      data.addMessage(roomName, { sender: '', text: `${userName} has joined room ${roomName}` });
+      // when a user joins, also include the time that they joined at
+      data.addMessage(roomName, { sender: '', text: `${userName} has joined room ${roomName}`, timestamp: new Date(Date.now()).toLocaleString() });
       io.to(roomName).emit('chat update', data.roomLog(roomName));
 
       socket.on('message', (text) => {
         const { roomName, userName } = socket.data;
-        const messageInfo = { sender: userName, text };
+        // whenever a message is sent, include the time it was sent at
+        const messageInfo = { sender: userName, text, timestamp: new Date(Date.now()).toLocaleString() };
         console.log(roomName, messageInfo);
         data.addMessage(roomName, messageInfo);
         io.to(roomName).emit('chat update', data.roomLog(roomName));
