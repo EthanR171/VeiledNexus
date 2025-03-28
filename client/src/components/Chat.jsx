@@ -30,20 +30,39 @@ const Chat = (props) => {
     // https://developer.mozilla.org/en-US/docs/Glossary/Unix_time
     const messageTimestamp = fns.format(message.timestamp, 'HH:mm');
 
-    /* Messages */
+    /* Meta Chat Messages */
+
+    if (message.sender == '') {
+      return (
+        <div key={index} ref={lastMessageRef} style={{ marginTop: '1em', marginBottom: '1em' }}>
+          <Typography variant="h6" textAlign="center">
+            <i>{message.text}</i>
+          </Typography>
+          <Typography variant="body2" textAlign="center">
+            <i>{messageTimestamp}</i>
+          </Typography>
+        </div>
+      );
+    }
+
+    /* User Messages */
+
+    const yourOwnMessage = message.sender == props.userName;
+    const messageClassName = yourOwnMessage ? 'user-message' : 'message';
 
     return (
-      <div key={index} ref={lastMessageRef}>
-        {message.sender ? (
-          <Typography variant="h6">{`${message.sender}: ${message.text}`}</Typography>
-        ) : (
-          <Typography variant="h6" textAlign="center">
+      <div key={index} ref={lastMessageRef} className={messageClassName}>
+        <div className="message-bubble">
+          <Typography variant="h6" className="message-text">
+            <strong>{message.sender}</strong>
+          </Typography>
+          <Typography variant="h6" className="message-text">
             {message.text}
           </Typography>
-        )}
-        <Typography variant="h6" sx={{ textAlign: 'center' }}>
-          <i>{messageTimestamp}</i>
-        </Typography>
+          <Typography variant="h6" sx={{ textAlign: 'right' }}>
+            <i>{messageTimestamp}</i>
+          </Typography>
+        </div>
       </div>
     );
   };
