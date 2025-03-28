@@ -3,28 +3,77 @@ import { Box, Paper, CardHeader, CardContent, Divider, Typography, TextField, Bu
 
 import SendIcon from '@mui/icons-material/Send';
 
+// https://date-fns.org/v4.1.0/docs/Getting-Started
+import * as fns from 'date-fns';
+
 const Chat = (props) => {
   /* Chat Log */
 
   const lastMessageRef = useRef(null);
 
-  const renderChatLog = () => {
-    const chat = props.chatLog ?? [];
-    // we added a timestamp to the message being passed back in server.js on.('message') event.
-    return chat.map((message, index) => (
-      <div key={index} style={{ textAlign: 'center' }}>
-        <Typography variant="h6">{`[${new Date(message.timestamp).toLocaleString()}]`}</Typography>
-        <Typography
-          ref={lastMessageRef}
-          variant="h6"
-          style={{
-            textAlign: message.sender ? 'left' : 'center',
-          }}
-        >
-          {message.sender ? `${message.sender}: ${message.text}` : `${message.text}`}
+  const renderMessage = (message, index) => {
+    /* New Day Messages */
+
+    if (message.newDay) {
+      return (
+        <div key={index} ref={lastMessageRef} style={{ marginBottom: '1em' }}>
+          <Typography variant="h6" textAlign="center">
+            <strong>{message.text}</strong>
+          </Typography>
+        </div>
+      );
+    }
+
+    /* Timestamp */
+
+    // This assumes message.timestamp is stored as Unix time
+    // https://developer.mozilla.org/en-US/docs/Glossary/Unix_time
+    const messageTimestamp = fns.format(message.timestamp, 'HH:mm');
+
+    /* Messages */
+
+    return (
+      <div key={index} ref={lastMessageRef}>
+        {message.sender ? (
+          <Typography variant="h6">{`${message.sender}: ${message.text}`}</Typography>
+        ) : (
+          <Typography variant="h6" textAlign="center">
+            {message.text}
+          </Typography>
+        )}
+        <Typography variant="h6" sx={{ textAlign: 'center' }}>
+          <i>{messageTimestamp}</i>
         </Typography>
       </div>
-    ));
+    );
+  };
+
+  const renderChatLog = () => {
+    const chat = props.chatLog ?? [];
+    const chatWithNewDayMessages = [];
+
+    let lastMessage = null;
+    chat.forEach((message) => {
+      // Checking if there's no "previous message", start the chat with the Day Message
+      // Or, if the day of the current message is different from the day of the previous message
+      if (!lastMessage || fns.getDay(lastMessage.timestamp) != fns.getDay(message.timestamp)) {
+        chatWithNewDayMessages.push({
+          // Not a user-sent message
+          sender: '',
+
+          // Formatting the text to the "Friday, April 29th, 1453" format
+          text: fns.format(message.timestamp, 'PPPP'),
+
+          // A new property just being added here to *flag this as a special message*
+          newDay: true,
+        });
+      }
+
+      chatWithNewDayMessages.push(message);
+      lastMessage = message;
+    });
+
+    return chatWithNewDayMessages.map(renderMessage);
   };
 
   useEffect(() => {
