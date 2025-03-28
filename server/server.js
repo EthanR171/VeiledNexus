@@ -4,6 +4,8 @@ import { Server } from 'socket.io';
 
 import * as data from './data.js';
 
+import * as colors from './colors.js';
+
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 const PORT = process.env.PORT || 9000;
 
@@ -47,21 +49,27 @@ io.on('connect', (socket) => {
       joinInfo.error = `The name ${userName} is already taken`;
     } else {
       data.registerUser(userName);
+      // Adding the generated color to the joinInfo object
+      joinInfo.color = colors.getRandomColor();
       socket.data = joinInfo;
       socket.join(roomName);
-      socket.on('disconnect', () => data.unregisterUser(userName));
+      socket.on('disconnect', () => {
+        data.unregisterUser(userName);
+        colors.releaseColor(socket.data.color);
+      });
 
       // when a user joins, also include the time that they joined at
       data.addMessage(roomName, { sender: '', text: `${userName} has joined room ${roomName}`, timestamp: timestamp });
       io.to(roomName).emit('chat update', data.roomLog(roomName));
 
       socket.on('message', ({ text, timestamp }) => {
-        const { roomName, userName } = socket.data;
+        const { roomName, userName, color } = socket.data;
         // store time in the backend (bruh its just data.js in this case) formatted
         const messageInfo = {
           sender: userName,
           text,
-          timestamp: timestamp,
+          color,
+          timestamp,
         };
         console.log(roomName, messageInfo);
         data.addMessage(roomName, messageInfo);
