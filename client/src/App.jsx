@@ -35,13 +35,12 @@ function App() {
   // Updated to send a timestamp with join info
   const joinRoom = (joinData) => {
     // get current date timestamp
-    var currentTimeUnix = Date.now();
-    var currentTimeString = new Date(currentTimeUnix).toLocaleString();
+    var currentTimeUnix = Date.now(); // ms since Jan 1, 1970
 
     // create an object directly becasue setJoinInfo cant update fast enough before the emit is called. (ends up sending stale data)
     const joinDataWithTimestamp = {
       ...joinData,
-      timestamp: currentTimeString,
+      timestamp: currentTimeUnix,
     };
 
     // update state so when we can later pass it as a prop to Chat component
@@ -57,7 +56,8 @@ function App() {
 
   const [chatLog, setChatLog] = useState([]);
   const sendMessage = (text) => {
-    socket.current.send(text); // defaults to socket.current.emit("message": text)
+    const timestamp = Date.now(); // ms since Jan 1, 1970
+    socket.current.send({ text, timestamp }); // defaults to socket.emit("message")
   };
 
   /* WebSocket */

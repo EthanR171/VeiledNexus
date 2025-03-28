@@ -13,7 +13,7 @@ const Chat = (props) => {
     // we added a timestamp to the message being passed back in server.js on.('message') event.
     return chat.map((message, index) => (
       <div key={index} style={{ textAlign: 'center' }}>
-        <Typography variant="h6">{`[${message.timestamp}]`}</Typography>
+        <Typography variant="h6">{`[${new Date(message.timestamp).toLocaleString()}]`}</Typography>
         <Typography
           ref={lastMessageRef}
           variant="h6"
@@ -35,6 +35,12 @@ const Chat = (props) => {
 
   const [messageText, setMessageText] = useState('');
 
+  const handleSendMessage = () => {
+    if (!messageText) return;
+    props.sendMessage(messageText);
+    setMessageText('');
+  };
+
   /* Render Component */
 
   return (
@@ -45,17 +51,14 @@ const Chat = (props) => {
         <List sx={{ height: '60vh', overflowY: 'scroll', textAlign: 'left' }}>{renderChatLog()}</List>
         <Divider />
         <Box sx={{ mt: '1em', display: 'flex', direction: 'row', flex: 1 }}>
-          <TextField fullWidth sx={{ mr: '1em', flex: 9 }} value={messageText} onChange={(e) => setMessageText(e.target.value)} />
-          <Button
+          <TextField
             fullWidth
-            variant="contained"
-            sx={{ flex: 1 }}
-            onClick={() => {
-              if (!messageText) return;
-              props.sendMessage(messageText);
-              setMessageText('');
-            }}
-          >
+            sx={{ mr: '1em', flex: 9 }}
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyDown={(e) => e.key == 'Enter' && handleSendMessage()}
+          />
+          <Button fullWidth variant="contained" sx={{ flex: 1 }} onClick={handleSendMessage}>
             <SendIcon />
           </Button>
         </Box>
