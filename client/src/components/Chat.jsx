@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Paper, CardHeader, CardContent, Divider, Typography, TextField, Button, List } from '@mui/material';
-
-import SendIcon from '@mui/icons-material/Send';
+import { Box, Paper, CardHeader, CardContent, Divider, Typography, TextField, Button, List, Stack, Drawer } from '@mui/material';
 
 // https://date-fns.org/v4.1.0/docs/Getting-Started
 import * as fns from 'date-fns';
+
+import SendIcon from '@mui/icons-material/Send';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const Chat = (props) => {
   /* Chat Log */
@@ -67,6 +69,14 @@ const Chat = (props) => {
     );
   };
 
+  /* Menu */
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const renderMenu = () => {
+    // ...
+  };
+
   const renderChatLog = () => {
     const chat = props.chatLog ?? [];
     const chatWithNewDayMessages = [];
@@ -113,7 +123,27 @@ const Chat = (props) => {
 
   return (
     <Paper elevation={4} sx={{ mt: '0.5em', display: 'flex', flexDirection: 'column' }}>
-      <CardHeader title={`${props.roomName} (as ${props.userName})`} />
+      <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
+        {renderMenu()}
+      </Drawer>
+
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          pl: '1em',
+          pr: '1em',
+        }}
+      >
+        <Button variant="contained" onClick={() => setMenuOpen(true)}>
+          <MenuIcon />
+        </Button>
+        <CardHeader title={props.roomName} />
+        <Button variant="contained">
+          <LogoutIcon />
+        </Button>
+      </Stack>
       <Divider />
       <CardContent>
         <List sx={{ height: '60vh', overflowY: 'scroll', textAlign: 'left' }}>{renderChatLog()}</List>
