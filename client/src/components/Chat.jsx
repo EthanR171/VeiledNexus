@@ -75,11 +75,18 @@ const Chat = (props) => {
 
   const renderUser = (user, index) => {
     return (
-      <div key={index} style={{ marginBottom: '1em' }}>
-        <Typography variant="h6" textAlign="center" sx={{ color: user.color }}>
-          <strong>{user.userName}</strong>
-        </Typography>
-      </div>
+      <Typography
+        key={index}
+        variant="h6"
+        textAlign="left"
+        paddingLeft="1.0em"
+        sx={{
+          marginBottom: '0.5em',
+          color: user.color,
+        }}
+      >
+        <strong>{user.userName}</strong>
+      </Typography>
     );
   };
 
@@ -136,10 +143,30 @@ const Chat = (props) => {
   return (
     <Paper elevation={4} sx={{ mt: '0.5em', display: 'flex', flexDirection: 'column' }}>
       <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <CardHeader title={props.roomName} />
-        <Typography variant="h6" textAlign="center">
+        <Typography
+          variant="h5"
+          sx={{
+            paddingTop: '1em',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.5em',
+            backgroundColor: '#fff',
+          }}
+        >
+          {props.roomName}
+        </Typography>
+
+        <Typography
+          variant="h6"
+          textAlign="center"
+          sx={{
+            margin: '1em',
+            marginTop: '0em',
+          }}
+        >
           {`${props.roomUsers.length} current user(s)`}
         </Typography>
+        <Divider sx={{ marginBottom: '1em' }} />
         {renderMenu()}
       </Drawer>
 
