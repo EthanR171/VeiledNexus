@@ -59,7 +59,7 @@ io.on('connect', (socket) => {
       });
 
       // when a user joins, also include the time that they joined at
-      data.addMessage(roomName, { sender: '', text: `${userName} has joined room ${roomName}`, timestamp: timestamp });
+      data.addMessage(roomName, { sender: '', text: `${userName} has joined the room`, timestamp: timestamp });
       io.to(roomName).emit('chat update', data.roomLog(roomName));
 
       socket.on('message', ({ text, timestamp }) => {
