@@ -56,6 +56,9 @@ io.on('connect', (socket) => {
       socket.on('disconnect', () => {
         data.unregisterUser(userName);
         colors.releaseColor(socket.data.color);
+        const disconnectTimestamp = Date.now();
+        data.addMessage(roomName, { sender: '', text: `${userName} has left the room`, timestamp: disconnectTimestamp });
+        io.to(roomName).emit('chat update', data.roomLog(roomName));
       });
 
       // when a user joins, also include the time that they joined at

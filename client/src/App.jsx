@@ -52,6 +52,24 @@ function App() {
     socket.current.emit('join', joinDataWithTimestamp);
   };
 
+  /* Logout */
+
+  const logout = () => {
+    // emit a disconnect to server to free up the username and color
+    socket.current.disconnect();
+
+    // reset join info state
+    setJoinInfo({
+      userName: '',
+      roomName: '',
+      timestamp: '',
+      error: '',
+    });
+
+    // reconnect again
+    socket.current.connect();
+  };
+
   /* Chat */
 
   const [chatLog, setChatLog] = useState([]);
@@ -96,7 +114,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Header title="VeiledNexus© - Ethan Rivers" />
-      {hasJoined() ? <Chat {...joinInfo} sendMessage={sendMessage} chatLog={chatLog} /> : <Login joinRoom={joinRoom} error={joinInfo.error} />}
+      {hasJoined() ? <Chat {...joinInfo} sendMessage={sendMessage} chatLog={chatLog} logout={logout} /> : <Login joinRoom={joinRoom} error={joinInfo.error} />}
     </ThemeProvider>
   );
 }
