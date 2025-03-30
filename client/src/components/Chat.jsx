@@ -73,10 +73,22 @@ const Chat = (props) => {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const renderMenu = () => {
-    // ...
+  const renderUser = (user, index) => {
+    return (
+      <div key={index} style={{ marginBottom: '1em' }}>
+        <Typography variant="h6" textAlign="center" sx={{ color: user.color }}>
+          <strong>{user.userName}</strong>
+        </Typography>
+      </div>
+    );
   };
 
+  const renderMenu = () => {
+    const roomUsers = props.roomUsers ?? [];
+    return roomUsers.map(renderUser);
+  };
+
+  /* Chat Log */
   const renderChatLog = () => {
     const chat = props.chatLog ?? [];
     const chatWithNewDayMessages = [];
@@ -124,6 +136,10 @@ const Chat = (props) => {
   return (
     <Paper elevation={4} sx={{ mt: '0.5em', display: 'flex', flexDirection: 'column' }}>
       <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <CardHeader title={props.roomName} />
+        <Typography variant="h6" textAlign="center">
+          {`${props.roomUsers.length} current user(s)`}
+        </Typography>
         {renderMenu()}
       </Drawer>
 

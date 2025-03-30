@@ -38,6 +38,22 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer, {});
 
 io.on('connect', (socket) => {
+  // Utility helper functions
+  const emitUpdatedRoomData = (roomName) => {
+    // Update the room details menu in App.jsx with the new user
+    io.in(roomName)
+      .fetchSockets()
+      .then((socketsInRoom) => {
+        const usersInRoom = socketsInRoom.map((s) => ({
+          userName: s.data.userName,
+          color: s.data.color,
+        }));
+        io.to(roomName).emit('update-room-users', usersInRoom); // Emit updated list
+      });
+  };
+
+  // End Utility Helper Functions
+
   console.log('New connection', socket.id);
 
   // Client will have to emit "user:join" with joinInfo
@@ -53,12 +69,16 @@ io.on('connect', (socket) => {
       joinInfo.color = colors.getRandomColor();
       socket.data = joinInfo;
       socket.join(roomName);
+
+      emitUpdatedRoomData(roomName);
+
       socket.on('disconnect', () => {
         data.unregisterUser(userName);
         colors.releaseColor(socket.data.color);
         const disconnectTimestamp = Date.now();
         data.addMessage(roomName, { sender: '', text: `${userName} has left the room`, timestamp: disconnectTimestamp });
         io.to(roomName).emit('chat update', data.roomLog(roomName));
+        emitUpdatedRoomData(roomName);
       });
 
       // when a user joins, also include the time that they joined at

@@ -70,6 +70,9 @@ function App() {
     socket.current.connect();
   };
 
+  /* Room Details Menu */
+  const [roomUsers, setRoomUsers] = useState([]);
+
   /* Chat */
 
   const [chatLog, setChatLog] = useState([]);
@@ -98,6 +101,8 @@ function App() {
 
       ws.on('chat update', setChatLog);
 
+      ws.on('update-room-users', setRoomUsers);
+
       socket.current = ws;
       effectRan.current = true; // Flag to prevent connecting twice
     } catch (e) {
@@ -114,7 +119,11 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Header title="VeiledNexus© - Ethan Rivers" />
-      {hasJoined() ? <Chat {...joinInfo} sendMessage={sendMessage} chatLog={chatLog} logout={logout} /> : <Login joinRoom={joinRoom} error={joinInfo.error} />}
+      {hasJoined() ? (
+        <Chat {...joinInfo} sendMessage={sendMessage} chatLog={chatLog} roomUsers={roomUsers} logout={logout} />
+      ) : (
+        <Login joinRoom={joinRoom} error={joinInfo.error} />
+      )}
     </ThemeProvider>
   );
 }
