@@ -81,6 +81,10 @@ function App() {
     socket.current.send({ text, timestamp }); // defaults to socket.emit("message")
   };
 
+  const notifyTyping = (typingInfo) => {
+    socket.current.emit('typing', typingInfo);
+  };
+
   /* WebSocket */
 
   // https://react.dev/reference/react/useRef
@@ -120,7 +124,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Header title="VeiledNexus© - Ethan Rivers" />
       {hasJoined() ? (
-        <Chat {...joinInfo} sendMessage={sendMessage} chatLog={chatLog} roomUsers={roomUsers} logout={logout} />
+        <Chat {...joinInfo} sendMessage={sendMessage} notifyTyping={notifyTyping} chatLog={chatLog} roomUsers={roomUsers} logout={logout} />
       ) : (
         <Login joinRoom={joinRoom} error={joinInfo.error} />
       )}

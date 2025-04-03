@@ -137,6 +137,25 @@ const Chat = (props) => {
     if (!messageText) return;
     props.sendMessage(messageText);
     setMessageText('');
+    const { userName, roomName } = props;
+    props.notifyTyping && props.notifyTyping({ roomName, userName, isTyping: false });
+  };
+
+  const handleMessageTextChange = (e) => {
+    setMessageText(e.target.value);
+
+    // Adding text to an empty field
+    const startedTyping = messageText == '' && e.target.value != '';
+    // Erasing a text field to empty
+    const finishedTyping = messageText != '' && e.target.value == '';
+
+    // Don't spam the notification at every keystroke
+    if (startedTyping || finishedTyping) {
+      const { userName, roomName } = props;
+      let typingInfo = { roomName, userName, isTyping: startedTyping };
+      // Prevening the function to be called if the function is not in the props
+      props.notifyTyping && props.notifyTyping(typingInfo);
+    }
   };
 
   /* Render Component */
@@ -197,7 +216,7 @@ const Chat = (props) => {
             fullWidth
             sx={{ mr: '1em', flex: 9 }}
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            onChange={handleMessageTextChange}
             onKeyDown={(e) => e.key == 'Enter' && handleSendMessage()}
           />
           <Button fullWidth variant="contained" sx={{ flex: 1 }} onClick={handleSendMessage}>

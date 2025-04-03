@@ -99,6 +99,10 @@ io.on('connect', (socket) => {
 
         io.to(roomName).emit('chat update', data.roomLog(roomName));
       });
+
+      socket.on('typing', (typingInfo) => {
+        console.log(typingInfo);
+      });
     }
 
     console.log(joinInfo);
