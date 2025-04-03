@@ -101,7 +101,9 @@ io.on('connect', (socket) => {
       });
 
       socket.on('typing', (typingInfo) => {
-        console.log(typingInfo);
+        const { roomName, userName, isTyping } = typingInfo;
+        data.updateTypingStatus(roomName, userName, isTyping);
+        io.to(roomName).emit('typing', data.getTypingUsers(roomName));
       });
     }
 

@@ -107,6 +107,8 @@ function App() {
 
       ws.on('update-room-users', setRoomUsers);
 
+      ws.on('typing', (data) => console.log(data));
+
       socket.current = ws;
       effectRan.current = true; // Flag to prevent connecting twice
     } catch (e) {
