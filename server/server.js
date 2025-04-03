@@ -72,6 +72,10 @@ io.on('connect', (socket) => {
 
       emitUpdatedRoomData(roomName);
 
+      // edge case for when user joins when people are typing.
+      // fetches typing users on join
+      socket.emit('typing', data.getTypingUsers(roomName));
+
       socket.on('disconnect', () => {
         data.unregisterUser(userName);
         colors.releaseColor(socket.data.color);
@@ -79,6 +83,10 @@ io.on('connect', (socket) => {
         data.addMessage(roomName, { sender: '', text: `${userName} has left the room`, timestamp: disconnectTimestamp });
         io.to(roomName).emit('chat update', data.roomLog(roomName));
         emitUpdatedRoomData(roomName);
+
+        // update users typing status on disconnect
+        data.updateTypingStatus(roomName, userName, false);
+        io.to(roomName).emit('typing', data.getTypingUsers(roomName));
       });
 
       // when a user joins, also include the time that they joined at
