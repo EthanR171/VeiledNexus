@@ -28,6 +28,7 @@ class Room {
 
   #name = '';
   #log = [];
+  #typingUsers = new Set();
 
   /* Ctor */
   constructor(name) {
@@ -40,6 +41,14 @@ class Room {
     this.#log.push(messageInfo);
   }
 
+  updateTypingStatus(userName, isTyping) {
+    if (isTyping) {
+      this.#typingUsers.add(userName);
+    } else {
+      this.#typingUsers.delete(userName);
+    }
+  }
+
   /* Accessors */
   get name() {
     return this.#name;
@@ -48,9 +57,13 @@ class Room {
   get log() {
     return this.#log;
   }
+
+  get typingUsers() {
+    return this.#typingUsers;
+  }
 }
 
-/* Module methods */
+/* Data Module Interface */
 const roomLog = (roomName) => {
   return Room.get(roomName).log;
 };
@@ -59,4 +72,12 @@ const addMessage = (roomName, messageInfo) => {
   Room.get(roomName).addMessage(messageInfo);
 };
 
-export { registerUser, unregisterUser, isUserNameTaken, roomLog, addMessage };
+const updateTypingStatus = (roomName, userName, isTyping) => {
+  Room.get(roomName).updateTypingStatus(userName, isTyping);
+};
+
+const getTypingUsers = (roomName) => {
+  return Array.from(Room.get(roomName).typingUsers);
+};
+
+export { registerUser, unregisterUser, isUserNameTaken, roomLog, addMessage, updateTypingStatus, getTypingUsers };
