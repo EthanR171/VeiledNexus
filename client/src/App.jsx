@@ -76,6 +76,8 @@ function App() {
   /* Chat */
 
   const [chatLog, setChatLog] = useState([]);
+  const [typingUsers, setTypingUsers] = useState([]);
+
   const sendMessage = (text) => {
     const timestamp = Date.now(); // ms since Jan 1, 1970
     socket.current.send({ text, timestamp }); // defaults to socket.emit("message")
@@ -107,7 +109,7 @@ function App() {
 
       ws.on('update-room-users', setRoomUsers);
 
-      ws.on('typing', (data) => console.log(data));
+      ws.on('typing', setTypingUsers);
 
       socket.current = ws;
       effectRan.current = true; // Flag to prevent connecting twice
@@ -126,7 +128,15 @@ function App() {
     <ThemeProvider theme={theme}>
       <Header title="VeiledNexus© - Ethan Rivers" />
       {hasJoined() ? (
-        <Chat {...joinInfo} sendMessage={sendMessage} notifyTyping={notifyTyping} chatLog={chatLog} roomUsers={roomUsers} logout={logout} />
+        <Chat
+          {...joinInfo}
+          sendMessage={sendMessage}
+          notifyTyping={notifyTyping}
+          typingUsers={typingUsers}
+          chatLog={chatLog}
+          roomUsers={roomUsers}
+          logout={logout}
+        />
       ) : (
         <Login joinRoom={joinRoom} error={joinInfo.error} />
       )}

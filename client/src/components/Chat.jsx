@@ -26,6 +26,15 @@ const Chat = (props) => {
       );
     }
 
+    /* User Typing Message */
+    if (message.typingFeedback) {
+      return (
+        <Typography key="typing-feedback" ref={lastMessageRef} variant="body1" textAlign="center" sx={{ marginBottom: '1em' }}>
+          <i>{message.text}</i>
+        </Typography>
+      );
+    }
+
     /* Timestamp */
 
     // This assumes message.timestamp is stored as Unix time
@@ -99,14 +108,14 @@ const Chat = (props) => {
   /* Chat Log */
   const renderChatLog = () => {
     const chat = props.chatLog ?? [];
-    const chatWithNewDayMessages = [];
+    const chatWithSpecialMessages = [];
 
     let lastMessage = null;
     chat.forEach((message) => {
       // Checking if there's no "previous message", start the chat with the Day Message
       // Or, if the day of the current message is different from the day of the previous message
       if (!lastMessage || fns.getDay(lastMessage.timestamp) != fns.getDay(message.timestamp)) {
-        chatWithNewDayMessages.push({
+        chatWithSpecialMessages.push({
           // Not a user-sent message
           sender: '',
 
@@ -118,16 +127,34 @@ const Chat = (props) => {
         });
       }
 
-      chatWithNewDayMessages.push(message);
+      chatWithSpecialMessages.push(message);
       lastMessage = message;
     });
 
-    return chatWithNewDayMessages.map(renderMessage);
+    // Remove yourself from the list - you ALREADY KNOW you're typing
+    let typing = props.typingUsers.filter((userName) => userName != props.userName);
+
+    if (typing.length > 0) {
+      let text = '';
+
+      if (typing.length == 1) {
+        text = `${typing[0]} is typing...`;
+      } else if (typing.length == 2) {
+        text = `${typing[0]} and ${typing[1]} are typing...`;
+      } else {
+        text = 'Multiple users are typing...';
+      }
+
+      // Adding the special flag typingFeedback similar to "newDay"
+      chatWithSpecialMessages.push({ sender: '', text, typingFeedback: true });
+    }
+
+    return chatWithSpecialMessages.map(renderMessage);
   };
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [props.chatLog]);
+  }, [props.chatLog, props.typingUsers]);
 
   /* Send Message */
 
