@@ -30,7 +30,8 @@ const Chat = (props) => {
 
     // This assumes message.timestamp is stored as Unix time
     // https://developer.mozilla.org/en-US/docs/Glossary/Unix_time
-    const messageTimestamp = fns.format(message.timestamp, 'HH:mm');
+    //const messageTimestamp = fns.format(message.timestamp, 'HH:mm');
+    const messageTimestamp = message.timestamp ? fns.format(new Date(message.timestamp), 'HH:mm') : '';
 
     /* Meta Chat Messages */
 
