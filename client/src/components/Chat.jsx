@@ -41,7 +41,7 @@ const Chat = (props) => {
             <i>{message.text}</i>
           </Typography>
           <Typography variant="body2" textAlign="center">
-            <i>{messageTimestamp}</i>
+            {messageTimestamp}
           </Typography>
         </div>
       );
@@ -62,7 +62,7 @@ const Chat = (props) => {
             {message.text}
           </Typography>
           <Typography variant="h6" sx={{ textAlign: 'right' }}>
-            <i>{messageTimestamp}</i>
+            {messageTimestamp}
           </Typography>
         </div>
       </div>
