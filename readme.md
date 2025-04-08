@@ -1,7 +1,5 @@
 # 👽 VeiledNexus
 
-An interactive gallery featuring iconic scenes from my favorite anime series, built with React and Framer Motion. Each title reveals three carefully chosen scenes with dynamic animations and mouse-tracked motion effects.
-
 A real-time full-duplex messaging application I created during my 5th Semester JavaScript Course. The final build of the application was then deployed to AWS using ElasticBeanstalk (see demo video).
 
 ---
