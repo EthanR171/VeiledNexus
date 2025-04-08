@@ -59,12 +59,39 @@ class Room {
       return;
     }
 
+    if (this.#log[messageIndex].deleted) {
+      console.log('Cannot edit a deleted message.');
+      return;
+    }
+
     if (this.#log[messageIndex].text === messageInfo.text) {
       console.log(`Edited message is the same: \nEdited: ${messageInfo.text} \nPrevious: ${this.#log[messageIndex].text}`);
       return;
     }
 
     this.#log[messageIndex].text = messageInfo.text;
+    this.#log[messageIndex].timestamp = messageInfo.timestamp;
+    this.#log[messageIndex].edited = messageInfo.edited;
+  }
+
+  deleteMessage(messageInfo) {
+    const messageIndex = this.#log.findLastIndex((message) => message.sender === messageInfo.sender);
+
+    if (messageIndex === -1) {
+      console.log(`Delete Aborted: ${messageInfo.sender} has no previous message to delete.`);
+      return;
+    }
+
+    if (this.#log[messageIndex].deleted) {
+      console.log('Cannot delete a deleted message.');
+      return;
+    }
+
+    const previousText = this.#log[messageIndex].text;
+
+    this.#log[messageIndex].deleted = messageInfo.deleted;
+    this.#log[messageIndex].text = messageInfo.text;
+    this.#log[messageIndex].previousText = previousText;
     this.#log[messageIndex].timestamp = messageInfo.timestamp;
     this.#log[messageIndex].edited = messageInfo.edited;
   }
@@ -96,6 +123,10 @@ const updateMessage = (roomName, messageInfo) => {
   Room.get(roomName).updateMessage(messageInfo);
 };
 
+const deleteMessage = (roomName, messageInfo) => {
+  Room.get(roomName).deleteMessage(messageInfo);
+};
+
 const updateTypingStatus = (roomName, userName, isTyping) => {
   Room.get(roomName).updateTypingStatus(userName, isTyping);
 };
@@ -104,4 +135,4 @@ const getTypingUsers = (roomName) => {
   return Array.from(Room.get(roomName).typingUsers);
 };
 
-export { registerUser, unregisterUser, isUserNameTaken, roomLog, addMessage, updateTypingStatus, getTypingUsers, updateMessage };
+export { registerUser, unregisterUser, isUserNameTaken, roomLog, addMessage, updateTypingStatus, getTypingUsers, updateMessage, deleteMessage };

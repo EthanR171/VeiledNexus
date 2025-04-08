@@ -72,7 +72,8 @@ const Chat = (props) => {
             {message.text}
           </Typography>
           <Typography variant="h6" sx={{ textAlign: 'right' }}>
-            {message.edited && '(edited) '} {messageTimestamp}
+            {message.edited && '(edited) '} {message.deleted && '(deleted) '}
+            {messageTimestamp}
           </Typography>
         </div>
       </div>
@@ -170,7 +171,12 @@ const Chat = (props) => {
       const parts = messageText.split(' ');
       const command = parts[0].toLowerCase();
 
-      if (command === '/edit') {
+      if (command === '/del') {
+        props.deleteMessage && props.deleteMessage();
+        setMessageText('');
+        props.notifyTyping && props.notifyTyping({ roomName, userName, isTyping: false });
+        return;
+      } else if (command === '/edit') {
         const editedText = parts.slice(1).join(' ');
         if (editedText) {
           props.editMessage && props.editMessage(editedText);

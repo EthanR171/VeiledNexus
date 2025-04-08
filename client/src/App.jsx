@@ -86,6 +86,10 @@ function App() {
     socket.current.emit('edit', { text });
   };
 
+  const deleteMessage = () => {
+    socket.current.emit('delete');
+  };
+
   const notifyTyping = (typingInfo) => {
     socket.current.emit('typing', typingInfo);
   };
@@ -112,6 +116,8 @@ function App() {
 
       ws.on('edit', setChatLog);
 
+      ws.on('delete', setChatLog);
+
       ws.on('update-room-users', setRoomUsers);
 
       ws.on('typing', setTypingUsers);
@@ -137,6 +143,7 @@ function App() {
           {...joinInfo}
           sendMessage={sendMessage}
           editMessage={editMessage}
+          deleteMessage={deleteMessage}
           notifyTyping={notifyTyping}
           typingUsers={typingUsers}
           chatLog={chatLog}

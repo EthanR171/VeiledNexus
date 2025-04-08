@@ -123,11 +123,6 @@ io.on('connect', (socket) => {
           return;
         }
 
-        if (socket.data.deleted) {
-          console.log('Message deleted, cannot edit');
-          return;
-        }
-
         const { roomName, userName } = socket.data;
         const editedAt = Date.now(); // ms since Jan 1, 1970
         const messageInfo = {
@@ -139,6 +134,23 @@ io.on('connect', (socket) => {
         console.log(roomName, messageInfo);
         data.updateMessage(roomName, messageInfo);
         io.to(roomName).emit('edit', data.roomLog(roomName));
+      });
+
+      /* Delete Message Event */
+      socket.on('delete', () => {
+        const { roomName, userName } = socket.data;
+        const deletedAt = Date.now(); // ms since Jan 1, 1970
+        const messageInfo = {
+          sender: userName,
+          text: '',
+          timestamp: deletedAt,
+          deleted: true,
+          edited: false,
+        };
+
+        //console.log(roomName, messageInfo);
+        data.deleteMessage(roomName, messageInfo);
+        io.to(roomName).emit('delete', data.roomLog(roomName));
       });
     }
 
