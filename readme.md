@@ -42,4 +42,4 @@ I worked on this app throughout my INFO-3139 course in Labs spaced over the cour
 
 ## 🎞️ Preview
 
-[▶️ Watch the demo](./video/Rivers-VeiledNexus-Demo-cs2.mp4)
+[▶️ Watch the demo](./video/VeiledNexus-Demo.mp4)
