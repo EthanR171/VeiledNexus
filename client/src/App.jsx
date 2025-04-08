@@ -79,8 +79,11 @@ function App() {
   const [typingUsers, setTypingUsers] = useState([]);
 
   const sendMessage = (text) => {
-    const timestamp = Date.now(); // ms since Jan 1, 1970
-    socket.current.send({ text, timestamp }); // defaults to socket.emit("message")
+    socket.current.send({ text }); // defaults to socket.emit("message")
+  };
+
+  const editMessage = (text) => {
+    socket.current.emit('edit', { text });
   };
 
   const notifyTyping = (typingInfo) => {
@@ -107,6 +110,8 @@ function App() {
 
       ws.on('chat update', setChatLog);
 
+      ws.on('edit', setChatLog);
+
       ws.on('update-room-users', setRoomUsers);
 
       ws.on('typing', setTypingUsers);
@@ -131,6 +136,7 @@ function App() {
         <Chat
           {...joinInfo}
           sendMessage={sendMessage}
+          editMessage={editMessage}
           notifyTyping={notifyTyping}
           typingUsers={typingUsers}
           chatLog={chatLog}

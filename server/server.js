@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import * as data from './data.js';
 
 import * as colors from './colors.js';
+import { time } from 'console';
 
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 const PORT = process.env.PORT || 9000;
@@ -93,9 +94,9 @@ io.on('connect', (socket) => {
       data.addMessage(roomName, { sender: '', text: `${userName} has joined the room`, timestamp: timestamp });
       io.to(roomName).emit('chat update', data.roomLog(roomName));
 
-      socket.on('message', ({ text, timestamp }) => {
+      socket.on('message', ({ text }) => {
         const { roomName, userName, color } = socket.data;
-        // store time in the backend (bruh its just data.js in this case) formatted
+        const timestamp = Date.now(); // ms since Jan 1, 1970
         const messageInfo = {
           sender: userName,
           text,
@@ -112,6 +113,32 @@ io.on('connect', (socket) => {
         const { roomName, userName, isTyping } = typingInfo;
         data.updateTypingStatus(roomName, userName, isTyping);
         io.to(roomName).emit('typing', data.getTypingUsers(roomName));
+      });
+
+      /* Edit Message Event */
+      socket.on('edit', ({ text }) => {
+        /* Edge Cases */
+        if (text.trim() === '') {
+          console.log('Empty edit ignored');
+          return;
+        }
+
+        if (socket.data.deleted) {
+          console.log('Message deleted, cannot edit');
+          return;
+        }
+
+        const { roomName, userName } = socket.data;
+        const editedAt = Date.now(); // ms since Jan 1, 1970
+        const messageInfo = {
+          sender: userName,
+          text,
+          timestamp: editedAt,
+          edited: true,
+        };
+        console.log(roomName, messageInfo);
+        data.updateMessage(roomName, messageInfo);
+        io.to(roomName).emit('edit', data.roomLog(roomName));
       });
     }
 

@@ -49,6 +49,26 @@ class Room {
     }
   }
 
+  updateMessage(messageInfo) {
+    const messageIndex = this.#log.findLastIndex((message) => message.sender === messageInfo.sender);
+
+    if (messageIndex === -1) {
+      console.log(`Message not found for user. Generating new Message: ${messageInfo.sender}`);
+      const correctedMessageInfo = { ...messageInfo, edited: false }; // treat the message as brand new instead of edited
+      this.addMessage(correctedMessageInfo);
+      return;
+    }
+
+    if (this.#log[messageIndex].text === messageInfo.text) {
+      console.log(`Edited message is the same: \nEdited: ${messageInfo.text} \nPrevious: ${this.#log[messageIndex].text}`);
+      return;
+    }
+
+    this.#log[messageIndex].text = messageInfo.text;
+    this.#log[messageIndex].timestamp = messageInfo.timestamp;
+    this.#log[messageIndex].edited = messageInfo.edited;
+  }
+
   /* Accessors */
   get name() {
     return this.#name;
@@ -72,6 +92,10 @@ const addMessage = (roomName, messageInfo) => {
   Room.get(roomName).addMessage(messageInfo);
 };
 
+const updateMessage = (roomName, messageInfo) => {
+  Room.get(roomName).updateMessage(messageInfo);
+};
+
 const updateTypingStatus = (roomName, userName, isTyping) => {
   Room.get(roomName).updateTypingStatus(userName, isTyping);
 };
@@ -80,4 +104,4 @@ const getTypingUsers = (roomName) => {
   return Array.from(Room.get(roomName).typingUsers);
 };
 
-export { registerUser, unregisterUser, isUserNameTaken, roomLog, addMessage, updateTypingStatus, getTypingUsers };
+export { registerUser, unregisterUser, isUserNameTaken, roomLog, addMessage, updateTypingStatus, getTypingUsers, updateMessage };
