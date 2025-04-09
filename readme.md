@@ -27,7 +27,7 @@ A real-time full-duplex messaging application. The final build of the applicatio
 
 ## 📍The Process
 
-I worked on VeiledNexus over the course of 1 month during my 5th senester Javascript course. The main objective of this project was to see how WebSockets differ from traditional HTTP requests. A large focus of creating VeiledNexus was constantly breaking code and debugging it to see why certain components work the way they do. One simple find, among numerous others, was that the unique identifier (id) of a Socket cannot be trusted to remain the same after disconnects. A simple fix was to provide each Socket with a meaningful and consistent identifer in its socket.data, which ended up being the username provided by each client.
+I worked on VeiledNexus over the course of 1 month during my 5th semester JavaScript course. The main objective of this project was to see how WebSockets differ from traditional HTTP requests. A large focus of creating VeiledNexus was constantly breaking code and debugging it to see why certain components work the way they do. One simple find, among numerous others, was that the unique identifier (id) of a Socket cannot be trusted to remain the same after disconnects. A simple fix was to provide each Socket with a meaningful and consistent identifer in its socket.data, which ended up being the username along with roomname provided by each client.
 
 ## 🚦Running the Project
 
