@@ -23,7 +23,7 @@ A real-time full-duplex messaging application. The final build of the applicatio
 - Provides users a menu with all active users in their current chat room
 - Allows for most recent message to be edited or deleted using Slash Commands (See Demo)
 - Gives users the option to leave a chat room via a "leave room" button
-- Prevents duplicate users from joining the same room
+- Prevents duplicate users
 
 ## 📍The Process
 
