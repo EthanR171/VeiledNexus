@@ -2,8 +2,6 @@
 
 A real-time full-duplex messaging application. The final build of the application was then deployed to AWS using ElasticBeanstalk (see demo video).
 
----
-
 ## ✨ Technologies
 
 - `React`
@@ -13,8 +11,6 @@ A real-time full-duplex messaging application. The final build of the applicatio
 - `AWS`
 - `CSS`
 - `Vite`
-
----
 
 ## 🚀 Features
 
